@@ -14,7 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: compila
-      run: gcc -o myTop processHandler.h statHandler.h main.c
+      run: gcc -pthread -o myTop processHandler.h statHandler.h main.c
     - name: start
       run: ./myTop
 
