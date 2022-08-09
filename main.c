@@ -1,18 +1,33 @@
-#include "statHandler.h"
-#include "processHandler.h"
+#include "function/statHandler.h"
+#include "function/processHandler.h"
 
 int main(int argc, char *argv[])
 {
 
-    while (1)
+    char* array[128] = {"./function/processLauncher", NULL};
+
+    pid_t pid;
+
+    pid = fork();
+
+    if (pid == -1)
     {
-        pthread_t thread_id[2];
-        pthread_create(&thread_id[0], NULL, processManager, NULL);
-        pthread_create(&thread_id[1], NULL, statManager, NULL);
-        pthread_detach(thread_id[0]);
-        pthread_detach(thread_id[1]);
-        sleep(10);
+        exit(EXIT_FAILURE);
     }
 
-    return 0;
+    if (pid == 0)
+    {
+        // processo figlio
+
+        //execvp("/bin/sh", array);
+        system("gnome-terminal -- ./function/processLauncher");
+
+    }
+    else
+    {
+        // processo Padre
+        pthread_t thread_id;
+        pthread_create(&thread_id, NULL, processManager, NULL);
+
+    }
 }
