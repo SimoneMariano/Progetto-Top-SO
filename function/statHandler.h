@@ -239,7 +239,7 @@ void getUsedCpu(struct dirent *pDsCopy, int cpuTot)
     }
 }
 
-void getPidandName (struct dirent *pDsCopy){
+int getPidandName (struct dirent *pDsCopy){
 
     FILE *statPid;
 
@@ -253,8 +253,8 @@ void getPidandName (struct dirent *pDsCopy){
 
     if ((statPid = fopen(path, "r")) == NULL)
     {
-        printf("Errore nell'apertura del file stat di un Pid\n");
-        exit(1);
+        printf("Errore nell'apertura del file stat di un Pid \n");
+        return -1;
     }
     else
     {
@@ -269,6 +269,7 @@ void getPidandName (struct dirent *pDsCopy){
 
     printf("Pid: %d, Name: %s", pid, processName);
     printf("\n");
+    return 0;
 
 }
 
@@ -324,7 +325,9 @@ void* statManager(){
 
                     // printf("%s\n", pDs->d_name);
 
-                    getPidandName(pDs);
+                    if(getPidandName(pDs)==-1){
+                        goto E;
+                    }
                     getUsedMemory(pDs, memTot);
                     getUsedCpu(pDs, cpuTot);
 
@@ -335,8 +338,9 @@ void* statManager(){
             }
 
             // chiudo la directory
+            E:
             closedir(directory);            
-
+            printf("-------------------------");
             sleep(3);
 
         }

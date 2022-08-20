@@ -4,7 +4,7 @@
 int main(int argc, char *argv[])
 {
 
-    char* array[128] = {"./function/processLauncher", NULL};
+    char* array[128] = {"sh -c ./ciao.c"};   /*.|function|processLauncher", NULL};*/
 
     pid_t pid;
 
@@ -20,14 +20,18 @@ int main(int argc, char *argv[])
         // processo figlio
 
         //execvp("/bin/sh", array);
-        system("gnome-terminal -- ./function/processLauncher");
+        
+        system("gnome-terminal reset --tab -- /bin/bash -c './function/processLauncher; exec /bin/bash -i'");
+        //printf("Muoio");
+        
+        
 
     }
     else
     {
-        // processo Padre
-        pthread_t thread_id;
-        pthread_create(&thread_id, NULL, processManager, NULL);
+        while(1){
+            processManager();
+        }
 
     }
 }
