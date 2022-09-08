@@ -53,20 +53,20 @@ void getUsedMemory(struct dirent *pDsCopy, int totMem)
     char tmp[256];
 
     char path[256];
+
     strcpy(path, "");
-    strcat(strcat(strcat(path, "/proc/"), pDsCopy->d_name), "/status");
+    strcat(strcat(strcat(path, "/proc/"), pDsCopy->d_name), "/smaps");
 
     if ((statusPid = fopen(path, "r")) == NULL)
     {
-        printf("Errore nell'apertura del file status di un Pid\n");
-        exit(1);
+        printf("Errore nell'apertura del file smaps di un Pid\n");
     }
     else
     {
         // printf("%s", path);
         // printf("\n");
 
-        for (int i = 0; i < 21; i++)
+        for (int i = 0; i < 4; i++)
         {
             fgets(tmp, 256, statusPid);
         }
@@ -75,18 +75,18 @@ void getUsedMemory(struct dirent *pDsCopy, int totMem)
 
         fscanf(statusPid, "%s %d", tmp, &num);
 
-        if (strcmp(tmp, "VmRSS:") == 0)
+        if (strcmp(tmp, "Rss:") == 0)
         {
 
-            float ret = ((float)num / (float)totMem) * 100;
+            float ret = (((float)num / (float)totMem) * 100);
 
-            printf("%s %f %%", tmp, ret);
+            printf("Mem usage: %f %%", ret);
             printf("\n");
         }
         else
         {
 
-            printf("VmRSS: 0.000000 %%");
+            printf("Mem usage: 0.000000 %%");
             printf("\n");
         }
 
