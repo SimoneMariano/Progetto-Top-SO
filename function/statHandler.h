@@ -340,8 +340,8 @@ void* statManager(){
             // chiudo la directory
             E:
             closedir(directory);            
-            printf("-------------------------");
-            sleep(3);
+            printf("-------------------------\n");
+            sleep(30);
 
         }
     }
