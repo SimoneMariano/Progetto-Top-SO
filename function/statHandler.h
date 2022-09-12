@@ -40,7 +40,7 @@ int getTotalMemory(FILE *fileMemInfo)
         fflush(fileMemInfo);
         fclose(fileMemInfo);
     }
-    return num;
+    return num / 1.024;
 }
 
 void getUsedMemory(struct dirent *pDsCopy, int totMem)
@@ -48,14 +48,14 @@ void getUsedMemory(struct dirent *pDsCopy, int totMem)
 
     FILE *statusPid;
 
-    int num;
+    int rss_value;
 
-    char tmp[256];
+    char rss[256];
 
     char path[256];
 
     strcpy(path, "");
-    strcat(strcat(strcat(path, "/proc/"), pDsCopy->d_name), "/smaps");
+    strcat(strcat(strcat(path, "/proc/"), pDsCopy->d_name), "/smaps_rollup");
 
     if ((statusPid = fopen(path, "r")) == NULL)
     {
@@ -66,21 +66,18 @@ void getUsedMemory(struct dirent *pDsCopy, int totMem)
         // printf("%s", path);
         // printf("\n");
 
-        for (int i = 0; i < 4; i++)
-        {
-            fgets(tmp, 256, statusPid);
-        }
+        fgets(rss, 256, statusPid);
 
-        strcpy(tmp, "");
+        strcpy(rss, "");
 
-        fscanf(statusPid, "%s %d", tmp, &num);
+        fscanf(statusPid, "%s %d", rss, &rss_value);
 
-        if (strcmp(tmp, "Rss:") == 0)
+        if ((strcmp(rss, "Rss:") == 0))
         {
 
-            float ret = (((float)num / (float)totMem) * 100);
+            float ret = ((((float)rss_value / (float)totMem) / 1.024) * 100);
 
-            printf("Mem usage: %f %%", ret);
+            printf("Memo usage: %f %%", ret);
             printf("\n");
         }
         else
@@ -101,15 +98,14 @@ float getTotalCpu(FILE *fileCpuInfo)
 
     float uptime;
 
-    // salvo il valore della memoria totale (kb)
     if ((fileCpuInfo = fopen("/proc/uptime", "r")) == NULL)
     {
-        printf("Errore nell'apertura del file meminfo\n");
+        printf("Errore nell'apertura del file uptime\n");
         exit(1);
     }
     else
     {
-        char str[10];
+
         fscanf(fileCpuInfo, "%f", &uptime);
         // printf("%d", uptime);
         // printf("\n");
@@ -141,109 +137,114 @@ void getUsedCpu(struct dirent *pDsCopy, int cpuTot)
     }
     else
     {
-        //printf("%s", path);
-        //printf("\n");
+        // printf("%s", path);
+        // printf("\n");
 
         fscanf(statPid, "%f", &trash);
 
         fscanf(statPid, "%s", stringTrash);
-        //printf("%s", stringTrash);
-        //printf("\n");
-
         strcpy(stringTrash, "");
 
         fscanf(statPid, "%s", stringTrash);
-        //printf("%s", stringTrash);
-        //printf("\n");
 
+        while (strlen(stringTrash) != 1)
+        {
+
+            // printf("%s", stringTrash);
+            // printf("\n");
+
+            strcpy(stringTrash, "");
+            fscanf(statPid, "%s", stringTrash);
+
+            // printf("%s", stringTrash);
+            // printf("\n");
+        }
+        // printf("%s", stringTrash);
+        // printf("\n");
 
         for (int i = 0; i < 19; i++)
         {
-            //printf("%d", i);
-            //printf("\n");
+            // printf("%d", i);
+            // printf("\n");
 
-            if (i==10)
+            if (i == 10)
             {
 
                 fscanf(statPid, "%f", &utime);
-                //printf("utime: %f", utime);
-                //printf("\n");
-
-
+                // printf("utime: %f", utime);
+                // printf("\n");
             }
-            else if (i==11)
+            else if (i == 11)
             {
 
-                fscanf(statPid,"%f", &stime);
-                //printf("stime: %f", stime);
-                //printf("\n");
-
+                fscanf(statPid, "%f", &stime);
+                // printf("stime: %f", stime);
+                // printf("\n");
             }
-            else if (i==12)
+            else if (i == 12)
             {
 
-                fscanf(statPid,"%f", &cutime);
-                //printf("cutime: %f", cutime);
-                //printf("\n");
-
+                fscanf(statPid, "%f", &cutime);
+                // printf("cutime: %f", cutime);
+                // printf("\n");
             }
-            else if (i==13)
+            else if (i == 13)
             {
 
-                fscanf(statPid,"%f", &cstime);
-                //printf("cstime: %f", cstime);
-                //printf("\n");
-
+                fscanf(statPid, "%f", &cstime);
+                // printf("cstime: %f", cstime);
+                // printf("\n");
             }
-            else if (i==18)
+            else if (i == 18)
             {
 
-                fscanf(statPid,"%f", &starttime);
-                //printf("strttime: %f", starttime);
-                //printf("\n");
-
+                fscanf(statPid, "%f", &starttime);
+                // printf("strttime: %f", starttime);
+                // printf("\n");
             }
-            else{
+            else
+            {
                 fscanf(statPid, "%f", &trash);
-                //printf("%f", trash);
-                //printf("\n");
+                // printf("%f", trash);
+                // printf("\n");
             }
-
         }
 
-        //somma tra tempo speso come user e come kernel
+        // somma tra tempo speso come user e come kernel
         totalTime = utime + stime;
 
-        //aggiungiamo il tempo per i figli come user e kernel
+        // aggiungiamo il tempo per i figli come user e kernel
         totalTime = totalTime + cutime + cstime;
 
-        //printf("totaltime: %f", totalTime);
-        //printf("\n");
+        // printf("totaltime: %f", totalTime);
+        // printf("\n");
 
         seconds = cpuTot - (starttime / hz);
 
-        //printf("seconds: %f", seconds);
-        //printf("\n");
+        // printf("seconds: %f", seconds);
+        // printf("\n");
 
-        cpuUsage = 100 * ((totalTime / hz) / seconds);         
+        cpuUsage = 100 * ((totalTime / hz) / seconds);
 
         fflush(statPid);
         fclose(statPid);
 
-        //printf("Hz: %f", hz);
-        //printf("\n");
+        // printf("Hz: %f", hz);
+        // printf("\n");
 
         printf("Cpu usage: %f %%", cpuUsage);
         printf("\n");
-
     }
 }
 
-int getPidandName (struct dirent *pDsCopy){
+int getPidandName(struct dirent *pDsCopy)
+{
 
     FILE *statPid;
 
     char processName[128];
+    char processName2[128];
+    char processState[2];
 
     int pid;
 
@@ -262,19 +263,38 @@ int getPidandName (struct dirent *pDsCopy){
 
         fscanf(statPid, "%s", processName);
 
+        fscanf(statPid, "%s", processName2);
+
+        while (strlen(processName2) != 1)
+        {
+
+            // printf("%s", stringTrash);
+            // printf("\n");
+
+            strcat(processName, " ");
+            strcat(processName, processName2);
+            strcpy(processName2, "");
+            fscanf(statPid, "%s", processName2);
+
+            // printf("%s", stringTrash);
+            // printf("\n");
+        }
+
+        strcpy(processState, processName2);
+
     }
 
     fflush(statPid);
     fclose(statPid);
 
-    printf("Pid: %d, Name: %s", pid, processName);
+    printf("Pid: %d, Name: %s, State: %s", pid, processName, processState);
     printf("\n");
     return 0;
-
 }
 
-void* statManager(){
-        // file per recuperare la memoria totale
+void *statManager()
+{
+    // file per recuperare la memoria totale
     FILE *fileMemInfo;
 
     // file per recuperare la CPU totale
@@ -283,7 +303,7 @@ void* statManager(){
     // memoria totale (kb)
     int memTot;
 
-    // CPU totale
+    // totale tempo CPU
     float cpuTot;
 
     // puntatore alla direct struct
@@ -325,24 +345,23 @@ void* statManager(){
 
                     // printf("%s\n", pDs->d_name);
 
-                    if(getPidandName(pDs)==-1){
+                    if (getPidandName(pDs) == -1)
+                    {
                         goto E;
                     }
                     getUsedMemory(pDs, memTot);
                     getUsedCpu(pDs, cpuTot);
-
                 }
 
                 // proseguo nello scorrere la directory
                 pDs = readdir(directory);
             }
 
-            // chiudo la directory
-            E:
-            closedir(directory);            
+        // chiudo la directory
+        E:
+            closedir(directory);
             printf("-------------------------\n");
-            sleep(30);
-
+            sleep(3);
         }
     }
 }
