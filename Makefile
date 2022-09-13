@@ -1,8 +1,8 @@
 MyTop: main.o subsystem
-	gcc -o MyTop main.o
+	gcc -o MyTop main.o -lrt
 
 main.o: main.c
-	gcc -c main.c
+	gcc -c main.c -lrt
 
 subsystem:
 	@cd function && $(MAKE)

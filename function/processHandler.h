@@ -3,8 +3,12 @@
 #include <pthread.h>
 #include <string.h>
 #include <signal.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <fcntl.h>
 
-void* processManager()
+void *processManager()
 {
     // variabile per gli scanf
     char input[128];
@@ -15,7 +19,29 @@ void* processManager()
     scanf("%s", input);
     if (strcmp(input, "q") == 0)
     {
+        /*
+        int shm_fd = shm_open("shmemo", O_RDONLY, 0660);
+        // TODO: controllo dell'errore affinato
+        if (shm_fd < 0)
+        {
+            exit(EXIT_FAILURE);
+        }
+
+        int *shm_addr = mmap(0, 4, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+
+        printf("%d\n", *shm_addr);
+
+        kill(*shm_addr, SIGKILL);
+
+        close(shm_fd);
+        // TODO: gestione errore della close
+        munmap(shm_addr, 4);
+        // TODO: gestione errore della munmap
+        shm_unlink("shmemo");
+        // TODO: gestione errore della unlink
+        */
         exit(EXIT_SUCCESS);
+
     }
     else
     {
