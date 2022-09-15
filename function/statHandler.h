@@ -1,3 +1,4 @@
+#pragma once
 #include <ctype.h>
 #include <dirent.h>
 #include <stdlib.h>
