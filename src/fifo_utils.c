@@ -1,10 +1,9 @@
-
-#define handle_error(msg) {perror(msg); exit(EXIT_FAILURE);}
-#define LIST_FIFO_NAME  "fifo_client"
-#define MANAGER_FIFO_NAME  "fifo_echo"
 #include <errno.h>
+#include "fifo_utils.h"
+#include <stdio.h>
+#include "utils.h"
+#include <unistd.h>
 
-//Sistemi di calcolo 2
 int read_from_pipe(int fd, void *data, size_t data_len) {
 
     int read_bytes = 0, ret;
@@ -21,6 +20,7 @@ int read_from_pipe(int fd, void *data, size_t data_len) {
 void writeMsg(int fd, char* buf, int size) {
 
     int ret;
+    
     int bytes_sent = 0;
     while (bytes_sent < size) {
         ret = write(fd, buf + bytes_sent, size - bytes_sent);
