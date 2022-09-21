@@ -2,9 +2,8 @@
 
 int main(int argc, char *argv[])
 {
-    
-        process_list();
-    
-    return 0;
 
+    process_list();
+
+    return 0;
 }

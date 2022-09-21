@@ -296,3 +296,10 @@ void handle_error(char* msg)
     perror(msg);
     exit(EXIT_FAILURE);
 }
+
+int string_to_int(char* dest, int src){
+int ret_value;
+    ret_value = sprintf(dest,"%d",src);
+    return ret_value;
+
+}

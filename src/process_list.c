@@ -11,18 +11,47 @@
 #include "utils.h"
 #include "fifo_utils.h"
 #include "process_list.h"
+#include <sys/mman.h>
+#include <signal.h>
+#include <semaphore.h>
+
 void process_list()
 {
-    /*char read[1];
-    int list_fifo, manager_fifo;
-    char buf[1024];
-    list_fifo = open(LIST_FIFO_NAME, O_WRONLY);
-    if (list_fifo == -1)
-        handle_error("Cannot open list FIFO for reading");
-    manager_fifo = open(MANAGER_FIFO_NAME, O_RDONLY);
-    if (manager_fifo == -1)
-        handle_error("Cannot open manager FIFO for writing");*/
+    sem_t *shm1_sem = sem_open(SHM1_SEM, O_CREAT, 0600);
 
+    if (shm1_sem == SEM_FAILED)
+    {
+        handle_error("sem_open filled");
+    }
+    sem_t *shm2_sem = sem_open(SHM2_SEM, O_CREAT, 0600);
+
+    if (shm2_sem == SEM_FAILED)
+    {
+        handle_error("sem_open filled");
+    }
+    if (sem_wait(shm2_sem) < 0)
+    {
+        handle_error("stat_manager.c: Errore nella post");
+    }
+    printf("inizio process_list");
+    int shm_fd = shm_open(SHM_NAME, O_RDWR | O_CREAT, 0660);
+    if (shm_fd < 0)
+    {
+        handle_error("process_list.c: Errore nella shm_open");
+    }
+    int *shm_ptr;
+    if ((shm_ptr = (int *)mmap(0, SHM_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0)) == MAP_FAILED)
+    {
+        exit(EXIT_FAILURE);
+        handle_error("process_list.c: errore nella mmap ");
+    }
+    int gnome_pid = getppid();
+    char *cgnome_pid = malloc(sizeof(int));
+    if (string_to_int(cgnome_pid, gnome_pid) < 0)
+    {
+        handle_error("process_list.c: Errore nella conversione del pid");
+    }
+    printf("%s %d\n", cgnome_pid, gnome_pid);
     // file per recuperare la memoria totale
     FILE *fileMemInfo;
 
@@ -40,10 +69,10 @@ void process_list()
 
     // entro in proc
     DIR *directory;
-
+    int i = 0;
     while (1)
     {
-
+        i++;
         directory = opendir("/proc/");
 
         // se la cartella non è vuota...
@@ -90,13 +119,38 @@ void process_list()
         E:
             closedir(directory);
             printf("-------------------------\n");
-            //read_from_pipe(manager_fifo, read, sizeof(char));
-             /*if (strcmp(read, "q") == 0)
+            printf("%d \n",i);
+            if (sem_wait(shm1_sem) < 0)
+                {
+                    handle_error("stat_manager.c: Errore nella post");
+                }
+            if (shm_ptr[0] == 999)
             {
-                exit(EXIT_SUCCESS);
-            }*/
-            //memset(read, 0, sizeof(char));
-                sleep(3);
+                printf("Entro in cs 999");
+                shm_ptr[1] = gnome_pid;
+                if (sem_post(shm2_sem) < 0)
+                {
+                    handle_error("stat_manager.c: Errore nella post");
+                }
+                printf("Exiting...\n");
+                if (sem_post(shm1_sem) < 0)
+                {
+                    handle_error("stat_manager.c: Errore nella post");
+                }
+                if(sem_close(shm1_sem)<0){
+                    handle_error("process_list.c: Errore nella close di shm1_sem");
+                }
+                if(sem_close(shm2_sem)<0){
+                    handle_error("process_list.c: Errore nella close di shm2_sem");
+                }
+                return;
+            }
+            if (sem_post(shm1_sem) < 0)
+                {
+                    handle_error("stat_manager.c: Errore nella post");
+                }
+
+            sleep(3);
         }
     }
 }
