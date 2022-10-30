@@ -1,4 +1,3 @@
-
 #include <ctype.h>
 #include <dirent.h>
 #include <stdlib.h>
@@ -14,6 +13,7 @@
 #include <sys/mman.h>
 #include <signal.h>
 #include <semaphore.h>
+#include "linked_list.h"
 
 void process_list()
 {
@@ -52,6 +52,11 @@ void process_list()
         handle_error("process_list.c: Errore nella conversione del pid");
     }
     printf("%s %d\n", cgnome_pid, gnome_pid);
+    
+    struct_process* list = malloc(10*sizeof(struct_process)); //deve essere la head
+
+    
+    
     // file per recuperare la memoria totale
     FILE *fileMemInfo;
 
@@ -92,7 +97,7 @@ void process_list()
 
             while (pDs)
             {
-
+                struct_process* s_process;
                 // escludo le cartelle "." e ".." e controllo che siano delle cartelle con nome un numero
                 if (((strcmp(pDs->d_name, ".") == 0 || strcmp(pDs->d_name, "..") == 0)))
                 {
@@ -103,7 +108,7 @@ void process_list()
 
                     // printf("%s\n", pDs->d_name);
 
-                    if (getPidandName(pDs) == -1)
+                    if (getPidandName(pDs,s_process) == -1)
                     {
                         goto E;
                     }

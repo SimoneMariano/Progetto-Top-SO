@@ -237,7 +237,7 @@ void getUsedCpu(struct dirent *pDsCopy, int cpuTot)
     }
 }
 
-int getPidandName(struct dirent *pDsCopy)
+int getPidandName(struct dirent *pDsCopy,struct_process* s_process)
 {
 
     FILE *statPid;
@@ -259,11 +259,15 @@ int getPidandName(struct dirent *pDsCopy)
     }
     else
     {
+        s_process = malloc(sizeof(struct_process));
         fscanf(statPid, "%d", &pid);
 
         fscanf(statPid, "%s", processName);
 
         fscanf(statPid, "%s", processName2);
+
+        s_process->pid = pid;
+
 
         while (strlen(processName2) != 1)
         {
@@ -273,6 +277,7 @@ int getPidandName(struct dirent *pDsCopy)
 
             strcat(processName, " ");
             strcat(processName, processName2);
+                        
             strcpy(processName2, "");
             fscanf(statPid, "%s", processName2);
 
@@ -285,7 +290,8 @@ int getPidandName(struct dirent *pDsCopy)
 
     fflush(statPid);
     fclose(statPid);
-
+    strcat(s_process->name, processName);
+    strcat(s_process->name, processState);
     printf("Pid: %d, Name: %s, State: %s", pid, processName, processState);
     printf("\n");
     return 0;
