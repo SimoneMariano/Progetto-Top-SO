@@ -43,7 +43,7 @@ int getTotalMemory(FILE *fileMemInfo)
     return num / 1.024;
 }
 
-void getUsedMemory(struct dirent *pDsCopy, int totMem)
+void getUsedMemory(struct dirent *pDsCopy, int totMem, struct_process* s_process)
 {
 
     FILE *statusPid;
@@ -76,6 +76,8 @@ void getUsedMemory(struct dirent *pDsCopy, int totMem)
         {
 
             float ret = ((((float)rss_value / (float)totMem) / 1.024) * 100);
+            s_process->memory_usage = ret;
+
 
             printf("Memo usage: %f %%", ret);
             printf("\n");
@@ -86,6 +88,7 @@ void getUsedMemory(struct dirent *pDsCopy, int totMem)
             printf("Mem usage: 0.000000 %%");
             printf("\n");
         }
+
 
         strcpy(path, "");
         fflush(statusPid);
@@ -115,9 +118,8 @@ float getTotalCpu(FILE *fileCpuInfo)
     return uptime;
 }
 
-void getUsedCpu(struct dirent *pDsCopy, int cpuTot)
+void getUsedCpu(struct dirent *pDsCopy, int cpuTot, struct_process* s_process)
 {
-
     FILE *statPid;
 
     float utime, stime, cutime, cstime, starttime, hz = sysconf(_SC_CLK_TCK), totalTime, seconds, cpuUsage, trash;
@@ -226,6 +228,8 @@ void getUsedCpu(struct dirent *pDsCopy, int cpuTot)
 
         cpuUsage = 100 * ((totalTime / hz) / seconds);
 
+        s_process->cpu_usage = cpuUsage;
+
         fflush(statPid);
         fclose(statPid);
 
@@ -259,7 +263,6 @@ int getPidandName(struct dirent *pDsCopy,struct_process* s_process)
     }
     else
     {
-        s_process = malloc(sizeof(struct_process));
         fscanf(statPid, "%d", &pid);
 
         fscanf(statPid, "%s", processName);
@@ -291,7 +294,7 @@ int getPidandName(struct dirent *pDsCopy,struct_process* s_process)
     fflush(statPid);
     fclose(statPid);
     strcat(s_process->name, processName);
-    strcat(s_process->name, processState);
+    strcat(s_process->state, processState);
     printf("Pid: %d, Name: %s, State: %s", pid, processName, processState);
     printf("\n");
     return 0;

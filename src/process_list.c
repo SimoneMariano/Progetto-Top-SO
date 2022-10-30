@@ -7,13 +7,13 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include "utils.h"
-#include "fifo_utils.h"
-#include "process_list.h"
 #include <sys/mman.h>
 #include <signal.h>
 #include <semaphore.h>
-#include "linked_list.h"
+#include "utils.h"
+#include "fifo_utils.h"
+#include "process_list.h"
+
 
 void process_list()
 {
@@ -52,11 +52,10 @@ void process_list()
         handle_error("process_list.c: Errore nella conversione del pid");
     }
     printf("%s %d\n", cgnome_pid, gnome_pid);
-    
-    struct_process* list = malloc(10*sizeof(struct_process)); //deve essere la head
 
-    
-    
+    ListHead* head = malloc(sizeof(ListHead));
+    List_init(head);
+
     // file per recuperare la memoria totale
     FILE *fileMemInfo;
 
@@ -97,7 +96,9 @@ void process_list()
 
             while (pDs)
             {
-                struct_process* s_process;
+                struct_process *s_process = malloc(sizeof(struct_process));
+
+
                 // escludo le cartelle "." e ".." e controllo che siano delle cartelle con nome un numero
                 if (((strcmp(pDs->d_name, ".") == 0 || strcmp(pDs->d_name, "..") == 0)))
                 {
@@ -108,12 +109,14 @@ void process_list()
 
                     // printf("%s\n", pDs->d_name);
 
-                    if (getPidandName(pDs,s_process) == -1)
+                    if (getPidandName(pDs, s_process) == -1)
                     {
                         goto E;
                     }
-                    getUsedMemory(pDs, memTot);
-                    getUsedCpu(pDs, cpuTot);
+                    getUsedMemory(pDs, memTot, s_process);
+                    getUsedCpu(pDs, cpuTot, s_process);
+
+                    ListItem *list = List_insert(head, head->last, (ListItem*) s_process);
                 }
 
                 // proseguo nello scorrere la directory
@@ -124,11 +127,16 @@ void process_list()
         E:
             closedir(directory);
             printf("-------------------------\n");
-            printf("%d \n",i);
+            printf("%d \n", i);
+
+            bubbleSort(head->first);
+            List_print(head);
+
+
             if (sem_wait(shm1_sem) < 0)
-                {
-                    handle_error("stat_manager.c: Errore nella post");
-                }
+            {
+                handle_error("stat_manager.c: Errore nella post");
+            }
             if (shm_ptr[0] == 999)
             {
                 printf("Entro in cs 999");
@@ -142,20 +150,22 @@ void process_list()
                 {
                     handle_error("stat_manager.c: Errore nella post");
                 }
-                if(sem_close(shm1_sem)<0){
+                if (sem_close(shm1_sem) < 0)
+                {
                     handle_error("process_list.c: Errore nella close di shm1_sem");
                 }
-                if(sem_close(shm2_sem)<0){
+                if (sem_close(shm2_sem) < 0)
+                {
                     handle_error("process_list.c: Errore nella close di shm2_sem");
                 }
                 return;
             }
             if (sem_post(shm1_sem) < 0)
-                {
-                    handle_error("stat_manager.c: Errore nella post");
-                }
+            {
+                handle_error("stat_manager.c: Errore nella post");
+            }
 
-            sleep(3);
+            sleep(30000000000000);
         }
     }
 }
