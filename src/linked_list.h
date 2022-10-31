@@ -1,20 +1,20 @@
 #pragma once
-
-typedef struct ListItem {
-  struct ListItem* prev;
-  struct ListItem* next;
-} ListItem;
-
+typedef struct struct_process {
+	struct struct_process* next;	
+	char name[256];
+	int pid;
+    float cpu_usage;
+	float memory_usage;
+    char state[256];
+} struct_process;
 typedef struct ListHead {
-  ListItem* first;
-  ListItem* last;
+  struct struct_process* first;
+  struct struct_process* last;
   int size;
 } ListHead;
 
 void List_print(ListHead* head);
 void List_init(ListHead* head);
-ListItem* List_find(ListHead* head, ListItem* item);
-ListItem* List_insert(ListHead* head, ListItem* previous, ListItem* item);
-ListItem* List_detach(ListHead* head, ListItem* item);
-void bubbleSort(ListItem* item);
-void swap(struct ListItem *a, struct ListItem *b);
+struct_process* List_find(ListHead* head, struct_process* item);
+void List_insert(struct struct_process* new_node, struct struct_process** head_ref);
+struct_process* List_detach(ListHead* head, struct_process* item);

@@ -118,7 +118,7 @@ float getTotalCpu(FILE *fileCpuInfo)
     return uptime;
 }
 
-void getUsedCpu(struct dirent *pDsCopy, int cpuTot, struct_process* s_process)
+void getUsedCpu(struct dirent *pDsCopy, int cpuTot, struct struct_process* s_process)
 {
     FILE *statPid;
 

@@ -3,15 +3,6 @@
 #include <dirent.h>
 #include "linked_list.h"
 
-typedef struct{
-	ListItem list;
-	char name[256];
-	int pid;
-    float cpu_usage;
-	float memory_usage;
-    char state[256];
-}struct_process;
-
 int isNumber(char *str);
 int getTotalMemory(FILE *fileMemInfo);
 void getUsedMemory(struct dirent *pDsCopy, int totMem, struct_process* s_process);

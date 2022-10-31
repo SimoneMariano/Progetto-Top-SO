@@ -13,6 +13,7 @@
 #include "utils.h"
 #include "fifo_utils.h"
 #include "process_list.h"
+#include "mergesort.h"
 
 
 void process_list()
@@ -116,7 +117,7 @@ void process_list()
                     getUsedMemory(pDs, memTot, s_process);
                     getUsedCpu(pDs, cpuTot, s_process);
 
-                    ListItem *list = List_insert(head, head->last, (ListItem*) s_process);
+                    List_insert(s_process, &head->first);
                 }
 
                 // proseguo nello scorrere la directory
@@ -129,7 +130,7 @@ void process_list()
             printf("-------------------------\n");
             printf("%d \n", i);
 
-            bubbleSort(head->first);
+            MergeSort(&head->first);
             List_print(head);
 
 
@@ -165,7 +166,7 @@ void process_list()
                 handle_error("stat_manager.c: Errore nella post");
             }
 
-            sleep(30000000000000);
+            sleep(3);
         }
     }
 }
