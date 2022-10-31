@@ -10,7 +10,6 @@
 #include "src/process_list.h"
 #include "src/utils.h"
 #include "src/stat_manager.h"
-#include "src/fifo_utils.h"
 #include "string.h"
 #include <semaphore.h>
 
@@ -84,12 +83,15 @@ int main(int argc, char *argv[])
         //printf("Entro in cs ");
         if (sem_wait(shm2_sem) < 0)
         {
+            handle_error("stat_manager.c: Errore nella wait");
+        }
+        if (sem_post(shm2_sem) < 0)
+        {
             handle_error("stat_manager.c: Errore nella post");
         }
         //printf("%d\n", shm_ptr[2]);
         kill(shm_ptr[1], SIGKILL);
-        //TODO: HANDLER E CONTROLLO ERRORI 
-
+        //TODO: HANDLER E CONTROLLO ERRORI
         if(shm_unlink(SHM_NAME)<0){
             handle_error("main.c_ Errore nella shm_unlink");
         }

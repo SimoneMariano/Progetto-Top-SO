@@ -11,7 +11,6 @@
 #include <signal.h>
 #include <semaphore.h>
 #include "utils.h"
-#include "fifo_utils.h"
 #include "process_list.h"
 #include "mergesort.h"
 
@@ -103,6 +102,7 @@ void process_list()
             while (pDs)
             {
                 struct_process *s_process = malloc(sizeof(struct_process));
+                s_process->next = NULL;
 
 
                 // escludo le cartelle "." e ".." e controllo che siano delle cartelle con nome un numero
@@ -122,7 +122,7 @@ void process_list()
                     getUsedMemory(pDs, memTot, s_process);
                     getUsedCpu(pDs, cpuTot, s_process);
 
-                    List_insert(s_process, &head->first);
+                    List_insert(s_process, &head);
                 }
 
                 // proseguo nello scorrere la directory
@@ -132,25 +132,28 @@ void process_list()
         // chiudo la directory
         E:
             closedir(directory);
-            printf("-------------------------\n");
-            printf("%d \n", i);
+            //printf("-------------------------\n");
+            //printf("%d \n", i);
 
             MergeSort(&head->first, flag);
             List_print(head);
-
+            List_cleaner(head);
 
             if (sem_wait(shm1_sem) < 0)
             {
                 handle_error("stat_manager.c: Errore nella post");
             }
-            if (shm_ptr[0] == 999)
+            if (shm_ptr[0] == 9)
             {
-                printf("Entro in cs 999");
+                printf("Entro in cs 9\n");
                 shm_ptr[1] = gnome_pid;
                 if (sem_post(shm2_sem) < 0)
                 {
                     handle_error("stat_manager.c: Errore nella post");
                 }
+
+                free(head);
+
                 printf("Exiting...\n");
                 if (sem_post(shm1_sem) < 0)
                 {
@@ -171,7 +174,7 @@ void process_list()
                 handle_error("stat_manager.c: Errore nella post");
             }
 
-            sleep(3);
+            sleep(5);
         }
     }
 }

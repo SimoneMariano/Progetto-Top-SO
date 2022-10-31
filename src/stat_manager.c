@@ -7,12 +7,11 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include "process_list.h"
-#include "fifo_utils.h"
 #include "utils.h"
 #include <signal.h>
 #include <semaphore.h>
-void stat_manager()
-{
+
+void stat_manager() {
 
     sem_t *shm1_sem = sem_open(SHM1_SEM, O_CREAT, 0600);
 
@@ -43,13 +42,14 @@ void stat_manager()
 
         printf("Inserire PID del processo da gestire o q per chiudere\n");
         scanf("%s", input);
+        
         if (strcmp(input, "q") == 0)
         {
             if (sem_wait(shm1_sem) < 0)
             {
                 handle_error("stat_manager.c: Errore nella wait");
             }
-            shm_ptr[0] = 999;
+            shm_ptr[0] = 9;
             if (sem_post(shm1_sem) < 0)
             {
                 handle_error("stat_manager.c: Errore nella post");
@@ -62,8 +62,6 @@ void stat_manager()
             {
                 handle_error("process_list.c: Errore nella close di shm1_sem");
             }
-            
-            
             return;
         }
         else

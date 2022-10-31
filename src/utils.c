@@ -28,7 +28,7 @@ int getTotalMemory(FILE *fileMemInfo)
     // salvo il valore della memoria totale (kb)
     if ((fileMemInfo = fopen("/proc/meminfo", "r")) == NULL)
     {
-        printf("Errore nell'apertura del file meminfo\n");
+        //printf("Errore nell'apertura del file meminfo\n");
         exit(1);
     }
     else
@@ -57,11 +57,8 @@ void getUsedMemory(struct dirent *pDsCopy, int totMem, struct_process* s_process
     strcpy(path, "");
     strcat(strcat(strcat(path, "/proc/"), pDsCopy->d_name), "/smaps_rollup");
 
-    if ((statusPid = fopen(path, "r")) == NULL)
-    {
-        printf("Errore nell'apertura del file smaps di un Pid\n");
-    }
-    else
+
+    if ((statusPid = fopen(path, "r")) != NULL)
     {
         // printf("%s", path);
         // printf("\n");
@@ -79,14 +76,14 @@ void getUsedMemory(struct dirent *pDsCopy, int totMem, struct_process* s_process
             s_process->memory_usage = ret;
 
 
-            printf("Memo usage: %f %%", ret);
-            printf("\n");
+            //printf("Memo usage: %f %%", ret);
+            //printf("\n");
         }
         else
         {
-
-            printf("Mem usage: 0.000000 %%");
-            printf("\n");
+            s_process->memory_usage = 0.000000;
+            //printf("Mem usage: 0.000000 %%");
+            //printf("\n");
         }
 
 
@@ -103,7 +100,7 @@ float getTotalCpu(FILE *fileCpuInfo)
 
     if ((fileCpuInfo = fopen("/proc/uptime", "r")) == NULL)
     {
-        printf("Errore nell'apertura del file uptime\n");
+        //printf("Errore nell'apertura del file uptime\n");
         exit(1);
     }
     else
@@ -134,7 +131,7 @@ void getUsedCpu(struct dirent *pDsCopy, int cpuTot, struct struct_process* s_pro
 
     if ((statPid = fopen(path, "r")) == NULL)
     {
-        printf("Errore nell'apertura del file stat di un Pid\n");
+        //printf("Errore nell'apertura del file stat di un Pid\n");
         exit(1);
     }
     else
@@ -236,8 +233,8 @@ void getUsedCpu(struct dirent *pDsCopy, int cpuTot, struct struct_process* s_pro
         // printf("Hz: %f", hz);
         // printf("\n");
 
-        printf("Cpu usage: %f %%", cpuUsage);
-        printf("\n");
+        //printf("Cpu usage: %f %%", cpuUsage);
+        //printf("\n");
     }
 }
 
@@ -258,7 +255,7 @@ int getPidandName(struct dirent *pDsCopy,struct_process* s_process)
 
     if ((statPid = fopen(path, "r")) == NULL)
     {
-        printf("Errore nell'apertura del file stat di un Pid \n");
+        //printf("Errore nell'apertura del file stat di un Pid \n");
         return -1;
     }
     else
@@ -295,8 +292,8 @@ int getPidandName(struct dirent *pDsCopy,struct_process* s_process)
     fclose(statPid);
     strcat(s_process->name, processName);
     strcat(s_process->state, processState);
-    printf("Pid: %d, Name: %s, State: %s", pid, processName, processState);
-    printf("\n");
+    //printf("Pid: %d, Name: %s, State: %s", pid, processName, processState);
+    //printf("\n");
     return 0;
 }
 

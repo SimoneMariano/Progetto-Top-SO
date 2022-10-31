@@ -1,15 +1,15 @@
-#include "linked_list.h"
-#include "utils.h"
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>
+#include "linked_list.h"
+#include "utils.h"
 
 void List_print(ListHead* head){
   struct_process* aux=head->first;
   while(aux){
     struct_process* element = (struct_process*) aux;
     printf ("PID: %d, NOME: %s, STATO: %s\nMemUsage: %f\nCpuUsage: %f\n", element->pid, element->name, element->state, element->memory_usage, element->cpu_usage);
-    printf("---------------------------------\n");
+    printf("--------------------------------------\n");
     aux=aux->next;
   }
   printf("\n");
@@ -32,7 +32,7 @@ struct_process* List_find(ListHead* head, struct_process* item) {
   return 0;
 }
 
-void List_insert(struct struct_process* new_node, struct struct_process** head_ref) {
+void List_insert(struct struct_process* new_node, ListHead** head_ref) {
 
     //struct struct_process* new_node = (struct struct_process*)malloc(sizeof(struct_process));
  
@@ -40,24 +40,25 @@ void List_insert(struct struct_process* new_node, struct struct_process** head_r
     //new_node->memory_usage = new_data;
  
     /* link the old list off the new node */
-    new_node->next = (*head_ref);
+    new_node->next = (*head_ref)->first;
  
     /* move the head to point to the new node */
-    (*head_ref) = new_node;
+    (*head_ref)->first = new_node;
+
+    (*head_ref)->size++;
 
 }
 
-struct_process* List_detach(ListHead* head, struct_process* item) {
+void List_cleaner(ListHead* head) {
 
   struct_process* aux = head->first;
-  struct_process* tmp = aux->next;
+  struct_process* tmp;
 
-  while(aux){
-
-    free(aux);
-    aux = tmp;
-    tmp = tmp->next;
-
+  while (aux != NULL)
+  {
+    tmp = aux;
+    aux = aux->next;
+    free(tmp);
   }
 
 }
