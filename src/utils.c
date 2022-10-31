@@ -289,8 +289,7 @@ int getPidandName(struct dirent *pDsCopy, struct_process *s_process)
     fclose(statPid);
     strcat(s_process->name, processName);
     strcat(s_process->state, processState);
-    // printf("Pid: %d, Name: %s, State: %s", pid, processName, processState);
-    // printf("\n");
+
     return 0;
 }
 

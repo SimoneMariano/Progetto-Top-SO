@@ -113,7 +113,7 @@ void process_list()
 
                     if (getPidandName(pDs, s_process) == -1)
                     {
-                        goto E;
+                        goto E; //Con la goto saltiamo direttamente alla procedura di cleanup
                     }
                     getUsedMemory(pDs, memTot, s_process);
                     getUsedCpu(pDs, cpuTot, s_process);
@@ -128,12 +128,11 @@ void process_list()
         // chiudo la directory
         E:
             closedir(directory);
-            // printf("-------------------------\n");
-            // printf("%d \n", i);
+            
 
-            MergeSort(&head->first, flag);
-            List_print(head);
-            List_cleaner(head);
+            MergeSort(&head->first, flag); //Sorting dei risultati trovati
+            List_print(head); //Stampa della lista ordinata
+            List_cleaner(head);//Deallocazione lista
 
             if (sem_wait(shm1_sem) < 0)
             {
