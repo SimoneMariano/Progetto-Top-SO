@@ -13,13 +13,13 @@
 #include "string.h"
 #include <semaphore.h>
 
-
 int main(int argc, char *argv[])
 {
-
+    // Pulizia semafori in caso di arresto imprevisto in esecuzioni precedenti
     sem_unlink(SHM1_SEM);
     sem_unlink(SHM2_SEM);
 
+    // Apertura semafori
     sem_t *shm1_sem = sem_open(SHM1_SEM, O_CREAT, 0600, 1);
 
     if (shm1_sem == SEM_FAILED)
@@ -33,9 +33,11 @@ int main(int argc, char *argv[])
         handle_error("sem_open filled");
     }
 
+    // Pulizia shared memory in caso di arresto imprevisto in esecuzioni precedenti
     shm_unlink(SHM_NAME);
+
+    // Apertura shared mamory
     int shm_fd = shm_open(SHM_NAME, O_RDWR | O_CREAT, 0660);
-    int *shm_ptr;
     if (shm_fd < 0)
     {
         exit(EXIT_FAILURE);
@@ -46,6 +48,9 @@ int main(int argc, char *argv[])
         handle_error("main.c: Errore nella ftruncate");
     }
 
+    int *shm_ptr;
+
+    // Fork
     pid_t pid;
 
     pid = fork();
@@ -55,32 +60,22 @@ int main(int argc, char *argv[])
         handle_error("main.c: Errore nella fork");
     }
 
-    if (pid == 0)
+    if (pid == 0) //Nel figlio avvio il monitor dei processi
     {
 
-        //printf("Fork Child %d\n", getpid());
         system("gnome-terminal reset --tab -- /bin/bash -c './function/processLauncher; exec /bin/bash -i'");
-        if ((shm_ptr = (int *)mmap(0, SHM_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0)) == MAP_FAILED)
-        {
-            exit(EXIT_FAILURE);
-            handle_error("process_list.c: errore nella mmap ");
-        }
-
-        //printf("Fork Child2 %d\n", getpid());
-
         _exit(EXIT_SUCCESS);
     }
-    else
+    else //Nel padre avvio la gestione dei segnali, poi, una volta terminato stat_manager(), procedo a chiudere simultaneamente il monitor
     {
-        //printf("Fork Father %d\n", getpid());
         stat_manager();
 
+        //chiusura simultanea monitor
         if ((shm_ptr = (int *)mmap(0, SHM_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0)) == MAP_FAILED)
         {
-            exit(EXIT_FAILURE);
             handle_error("process_list.c: errore nella mmap ");
         }
-        //printf("Entro in cs ");
+    
         if (sem_wait(shm2_sem) < 0)
         {
             handle_error("stat_manager.c: Errore nella wait");
@@ -89,14 +84,16 @@ int main(int argc, char *argv[])
         {
             handle_error("stat_manager.c: Errore nella post");
         }
-        //printf("%d\n", shm_ptr[2]);
-        kill(shm_ptr[1], SIGKILL);
-        //TODO: HANDLER E CONTROLLO ERRORI
-        if(shm_unlink(SHM_NAME)<0){
+        kill(shm_ptr[1], SIGKILL); //invio SIGKILL al monitor
+
+        // Cleanup di shared memory e semafori
+        if (shm_unlink(SHM_NAME) < 0)
+        {
             handle_error("main.c_ Errore nella shm_unlink");
         }
 
-        if(close(shm_fd)<0){
+        if (close(shm_fd) < 0)
+        {
 
             handle_error("main.c: Errore nella close della shared memory");
         }
@@ -108,11 +105,13 @@ int main(int argc, char *argv[])
         {
             handle_error("process_list.c: Errore nella close di shm2_sem");
         }
-        
-        if(sem_unlink(SHM1_SEM)<0){
+
+        if (sem_unlink(SHM1_SEM) < 0)
+        {
             handle_error("main.c: Errore nella sem_unlink di SHM1_SEM");
         }
-        if(sem_unlink(SHM2_SEM)<0){
+        if (sem_unlink(SHM2_SEM) < 0)
+        {
             handle_error("main.c: Errore nella sem_unlink di SHM2_SEM");
         }
     }

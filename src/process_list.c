@@ -14,7 +14,6 @@
 #include "process_list.h"
 #include "mergesort.h"
 
-
 void process_list()
 {
     sem_t *shm1_sem = sem_open(SHM1_SEM, O_CREAT, 0600);
@@ -33,7 +32,7 @@ void process_list()
     {
         handle_error("stat_manager.c: Errore nella post");
     }
-    //printf("inizio process_list");
+    // printf("inizio process_list");
     int shm_fd = shm_open(SHM_NAME, O_RDWR | O_CREAT, 0660);
     if (shm_fd < 0)
     {
@@ -58,7 +57,7 @@ void process_list()
     }
     printf("%s %d\n", cgnome_pid, gnome_pid);
     free(cgnome_pid);
-    ListHead* head = List_init();
+    ListHead *head = List_init();
 
     // file per recuperare la memoria totale
     FILE *fileMemInfo;
@@ -100,8 +99,7 @@ void process_list()
 
             while (pDs)
             {
-                struct_process* s_process = struct_process_init(head);
-
+                struct_process *s_process = struct_process_init(head);
 
                 // escludo le cartelle "." e ".." e controllo che siano delle cartelle con nome un numero
                 if (((strcmp(pDs->d_name, ".") == 0 || strcmp(pDs->d_name, "..") == 0)))
@@ -130,13 +128,12 @@ void process_list()
         // chiudo la directory
         E:
             closedir(directory);
-            //printf("-------------------------\n");
-            //printf("%d \n", i);
+            // printf("-------------------------\n");
+            // printf("%d \n", i);
 
             MergeSort(&head->first, flag);
             List_print(head);
             List_cleaner(head);
-            
 
             if (sem_wait(shm1_sem) < 0)
             {

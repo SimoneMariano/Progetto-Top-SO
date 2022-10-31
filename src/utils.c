@@ -20,6 +20,7 @@ int isNumber(char *str)
 }
 
 // funzione per recuperare la memoria totale del sistema da meminfo di proc
+
 int getTotalMemory(FILE *fileMemInfo)
 {
 

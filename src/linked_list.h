@@ -1,19 +1,20 @@
 #pragma once
+
 typedef struct struct_process
 {
-  struct struct_process *next;
-  char name[256];
-  int pid;
-  float cpu_usage;
-  float memory_usage;
-  char state[2];
+  struct struct_process *next; //Puntatore al prossimo elemento
+  char name[256]; //Nome del processo
+  int pid; //PID del processo
+  float cpu_usage; //Uso della CPU
+  float memory_usage; //Uso della memoria
+  char state[2]; //Stato del processo
 } struct_process;
 
 typedef struct ListHead
 {
-  struct struct_process *first;
-  struct struct_process *last;
-  int size;
+  struct struct_process *first; //Primo elemento della lista
+  struct struct_process *last;  //Ultimo elemento della lista
+  int size; //Dimensione della lista
 } ListHead;
 
 struct struct_process *struct_process_init(ListHead *head);

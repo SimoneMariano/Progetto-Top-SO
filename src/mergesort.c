@@ -1,8 +1,9 @@
-// C code for linked list merged sort
 #include <stdio.h>
 #include <stdlib.h>
 #include "linked_list.h"
 #include "mergesort.h"
+
+//L'algoritmo di MERGESORT è stato adattato dal sito https:// www.geeksforgeeks.org/?p=3622
 
 /* sorts the linked list by changing next pointers (not memory_usage) */
 void MergeSort(struct struct_process** headRef, int flag)
@@ -27,8 +28,7 @@ void MergeSort(struct struct_process** headRef, int flag)
     *headRef = SortedMerge(a, b, flag);
 }
  
-/* See https:// www.geeksforgeeks.org/?p=3622 for details of this
-function */
+
 struct_process* SortedMerge(struct struct_process* a, struct struct_process* b , int flag)
 {
     struct struct_process* result = NULL;

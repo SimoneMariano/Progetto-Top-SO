@@ -4,7 +4,9 @@
 #include "linked_list.h"
 #include "utils.h"
 
-void List_print(ListHead *head)
+// Il seguente file è stato costruito riadattando le funzioni delle linked list utilizzate nel corso
+
+void List_print(ListHead *head) // Funzione di stampa della linked list
 {
   struct_process *aux = head->first;
   while (aux)
@@ -17,20 +19,18 @@ void List_print(ListHead *head)
   printf("\n");
 }
 
-ListHead *List_init()
+ListHead *List_init() // Funzione che inizializza la ListHead
 {
-  ListHead *head = (ListHead *)malloc(sizeof(ListHead));
+  ListHead *head = (ListHead *)malloc(sizeof(ListHead)); // allocazione della ListHead
 
   head->first = NULL;
   head->last = NULL;
   head->size = 0;
   return head;
 }
-struct struct_process *struct_process_init(ListHead *head)
+struct struct_process *struct_process_init(ListHead *head) // Funzione che inizializza la struct_process
 {
-  struct struct_process *new_node = (struct struct_process *)malloc(sizeof(struct_process));
-
-  /* put in the data */
+  struct struct_process *new_node = (struct struct_process *)malloc(sizeof(struct_process)); // Allocazione del nodo
   new_node->memory_usage = 0;
   new_node->cpu_usage = 0;
   new_node->pid = 0;
@@ -38,36 +38,18 @@ struct struct_process *struct_process_init(ListHead *head)
   return new_node;
 }
 
-struct_process *List_find(ListHead *head, struct_process *item)
+void List_insert(struct struct_process *new_node, ListHead **head_ref) // Inserisce il nodo nella lista
 {
-  // linear scanning of list
-  struct_process *aux = head->first;
-  while (aux)
-  {
-    if (aux == item)
-      return item;
-    aux = aux->next;
-  }
-  return 0;
-}
-
-void List_insert(struct struct_process *new_node, ListHead **head_ref)
-{
-
-  /* link the old list off the new node */
   new_node->next = (*head_ref)->first;
-
-  /* move the head to point to the new node */
   (*head_ref)->first = new_node;
-
   (*head_ref)->size++;
   return;
 }
 
-void List_cleaner(ListHead *head)
+void List_cleaner(ListHead *head) //Deallocazione lista
 {
 
-  if (head->first == NULL || head->last == NULL)
+  if (head->first == NULL|| head->last == NULL)
   {
     return;
   }
