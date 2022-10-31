@@ -34,7 +34,7 @@ void process_list()
     {
         handle_error("stat_manager.c: Errore nella post");
     }
-    printf("inizio process_list");
+    //printf("inizio process_list");
     int shm_fd = shm_open(SHM_NAME, O_RDWR | O_CREAT, 0660);
     if (shm_fd < 0)
     {
@@ -46,6 +46,11 @@ void process_list()
         exit(EXIT_FAILURE);
         handle_error("process_list.c: errore nella mmap ");
     }
+
+    int flag;
+    printf("0: ordinare per CpuUsage, 1: ordinare per MemUsage?\nRisposta: ");
+    scanf("%d", &flag);
+
     int gnome_pid = getppid();
     char *cgnome_pid = malloc(sizeof(int));
     if (string_to_int(cgnome_pid, gnome_pid) < 0)
@@ -130,7 +135,7 @@ void process_list()
             printf("-------------------------\n");
             printf("%d \n", i);
 
-            MergeSort(&head->first);
+            MergeSort(&head->first, flag);
             List_print(head);
 
 

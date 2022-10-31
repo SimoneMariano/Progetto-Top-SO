@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     if (pid == 0)
     {
 
-        printf("Fork Child %d\n", getpid());
+        //printf("Fork Child %d\n", getpid());
         system("gnome-terminal reset --tab -- /bin/bash -c './function/processLauncher; exec /bin/bash -i'");
         if ((shm_ptr = (int *)mmap(0, SHM_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0)) == MAP_FAILED)
         {
@@ -67,13 +67,13 @@ int main(int argc, char *argv[])
             handle_error("process_list.c: errore nella mmap ");
         }
 
-        printf("Fork Child2 %d\n", getpid());
+        //printf("Fork Child2 %d\n", getpid());
 
         _exit(EXIT_SUCCESS);
     }
     else
     {
-        printf("Fork Father %d\n", getpid());
+        //printf("Fork Father %d\n", getpid());
         stat_manager();
 
         if ((shm_ptr = (int *)mmap(0, SHM_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0)) == MAP_FAILED)
@@ -81,12 +81,12 @@ int main(int argc, char *argv[])
             exit(EXIT_FAILURE);
             handle_error("process_list.c: errore nella mmap ");
         }
-        printf("Entro in cs");
+        //printf("Entro in cs ");
         if (sem_wait(shm2_sem) < 0)
         {
             handle_error("stat_manager.c: Errore nella post");
         }
-        printf("%d\n", shm_ptr[2]);
+        //printf("%d\n", shm_ptr[2]);
         kill(shm_ptr[1], SIGKILL);
         //TODO: HANDLER E CONTROLLO ERRORI 
 

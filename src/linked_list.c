@@ -6,15 +6,13 @@
 
 void List_print(ListHead* head){
   struct_process* aux=head->first;
-  printf("[");
   while(aux){
     struct_process* element = (struct_process*) aux;
-    printf("%s ", element->name);
-    printf("%f\n", element->memory_usage);
+    printf ("PID: %d, NOME: %s, STATO: %s\nMemUsage: %f\nCpuUsage: %f\n", element->pid, element->name, element->state, element->memory_usage, element->cpu_usage);
     printf("---------------------------------\n");
     aux=aux->next;
   }
-  printf("]\n");
+  printf("\n");
 }
 
 void List_init(ListHead* head) {

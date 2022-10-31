@@ -5,7 +5,7 @@
 #include "mergesort.h"
 
 /* sorts the linked list by changing next pointers (not memory_usage) */
-void MergeSort(struct struct_process** headRef)
+void MergeSort(struct struct_process** headRef, int flag)
 {
     struct struct_process* head = *headRef;
     struct struct_process* a;
@@ -20,16 +20,16 @@ void MergeSort(struct struct_process** headRef)
     FrontBackSplit(head, &a, &b);
  
     /* Recursively sort the sublists */
-    MergeSort(&a);
-    MergeSort(&b);
+    MergeSort(&a, flag);
+    MergeSort(&b, flag);
  
     /* answer = merge the two sorted lists together */
-    *headRef = SortedMerge(a, b);
+    *headRef = SortedMerge(a, b, flag);
 }
  
 /* See https:// www.geeksforgeeks.org/?p=3622 for details of this
 function */
-struct_process* SortedMerge(struct struct_process* a, struct struct_process* b)
+struct_process* SortedMerge(struct struct_process* a, struct struct_process* b , int flag)
 {
     struct struct_process* result = NULL;
  
@@ -40,13 +40,25 @@ struct_process* SortedMerge(struct struct_process* a, struct struct_process* b)
         return (a);
  
     /* Pick either a or b, and recur */
-    if (a->memory_usage <= b->memory_usage) {
-        result = a;
-        result->next = SortedMerge(a->next, b);
+    if (flag == 1){
+        if (a->memory_usage <= b->memory_usage) {
+            result = a;
+            result->next = SortedMerge(a->next, b, flag);
+        }
+        else {
+            result = b;
+            result->next = SortedMerge(a, b->next, flag);
+        }
     }
     else {
-        result = b;
-        result->next = SortedMerge(a, b->next);
+        if (a->cpu_usage <= b->cpu_usage) {
+            result = a;
+            result->next = SortedMerge(a->next, b, flag);
+        }
+        else {
+            result = b;
+            result->next = SortedMerge(a, b->next, flag);
+        }
     }
     return (result);
 }
