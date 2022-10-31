@@ -11,7 +11,8 @@
 #include <signal.h>
 #include <semaphore.h>
 
-void stat_manager() {
+void stat_manager()
+{
 
     sem_t *shm1_sem = sem_open(SHM1_SEM, O_CREAT, 0600);
 
@@ -34,15 +35,16 @@ void stat_manager() {
 
     while (1)
     {
-
+        
         // variabile per gli scanf
-        char input[1];
+        char input[4];
+        memset(input,0,4);
 
         int pid;
 
         printf("Inserire PID del processo da gestire o q per chiudere\n");
         scanf("%s", input);
-        
+
         if (strcmp(input, "q") == 0)
         {
             if (sem_wait(shm1_sem) < 0)

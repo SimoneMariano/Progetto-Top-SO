@@ -57,9 +57,8 @@ void process_list()
         handle_error("process_list.c: Errore nella conversione del pid");
     }
     printf("%s %d\n", cgnome_pid, gnome_pid);
-
-    ListHead* head = malloc(sizeof(ListHead));
-    List_init(head);
+    free(cgnome_pid);
+    ListHead* head = List_init();
 
     // file per recuperare la memoria totale
     FILE *fileMemInfo;
@@ -101,8 +100,7 @@ void process_list()
 
             while (pDs)
             {
-                struct_process *s_process = malloc(sizeof(struct_process));
-                s_process->next = NULL;
+                struct_process* s_process = struct_process_init(head);
 
 
                 // escludo le cartelle "." e ".." e controllo che siano delle cartelle con nome un numero
@@ -138,6 +136,7 @@ void process_list()
             MergeSort(&head->first, flag);
             List_print(head);
             List_cleaner(head);
+            
 
             if (sem_wait(shm1_sem) < 0)
             {
