@@ -16,6 +16,7 @@
 
 void process_list()
 {
+    // Apertura semafori e shared memory
     sem_t *shm1_sem = sem_open(SHM1_SEM, O_CREAT, 0600);
 
     if (shm1_sem == SEM_FAILED)
@@ -32,7 +33,6 @@ void process_list()
     {
         handle_error("stat_manager.c: Errore nella post");
     }
-    // printf("inizio process_list");
     int shm_fd = shm_open(SHM_NAME, O_RDWR | O_CREAT, 0660);
     if (shm_fd < 0)
     {
@@ -45,6 +45,8 @@ void process_list()
         handle_error("process_list.c: errore nella mmap ");
     }
 
+    // IANNONE BRUNO
+    // Scansione processi
     int flag;
     printf("0: ordinare per CpuUsage, 1: ordinare per MemUsage?\nRisposta: ");
     scanf("%d", &flag);
@@ -59,42 +61,32 @@ void process_list()
     free(cgnome_pid);
     ListHead *head = List_init();
 
-    // file per recuperare la memoria totale
-    FILE *fileMemInfo;
+    FILE *fileMemInfo; // file per recuperare la memoria totale
 
-    // file per recuperare la CPU totale
-    FILE *fileCpuInfo;
+    FILE *fileCpuInfo; // file per recuperare la CPU totale
 
-    // memoria totale (kb)
-    int memTot;
+    int memTot; // memoria totale (kb)
 
-    // totale tempo CPU
-    float cpuTot;
+    float cpuTot; // totale tempo CPU
 
-    // puntatore alla direct struct
-    struct dirent *pDs;
+    struct dirent *pDs; // puntatore alla direct struct
 
-    // entro in proc
     DIR *directory;
     int i = 0;
     while (1)
     {
         i++;
-        directory = opendir("/proc/");
+        directory = opendir("/proc/"); // entro in proc
 
-        // se la cartella non è vuota...
         if (directory)
         {
 
-            // returna la memoria totale del sistema
             memTot = getTotalMemory(fileMemInfo);
 
-            // returna la CPU totale del sistema
             cpuTot = getTotalCpu(fileCpuInfo);
 
             // printf("Cpu used: %f", cpuTot);
 
-            // controllo gli elementi presenti nella cartella...
             pDs = readdir(directory);
 
             while (pDs)
@@ -109,11 +101,9 @@ void process_list()
                 else if ((pDs->d_type == DT_DIR) && (isNumber(pDs->d_name) == 1))
                 {
 
-                    // printf("%s\n", pDs->d_name);
-
                     if (getPidandName(pDs, s_process) == -1)
                     {
-                        goto E; //Con la goto saltiamo direttamente alla procedura di cleanup
+                        goto E; // Con la goto saltiamo direttamente alla procedura di cleanup
                     }
                     getUsedMemory(pDs, memTot, s_process);
                     getUsedCpu(pDs, cpuTot, s_process);
@@ -121,39 +111,37 @@ void process_list()
                     List_insert(s_process, &head);
                 }
 
-                // proseguo nello scorrere la directory
                 pDs = readdir(directory);
             }
 
-        // chiudo la directory
         E:
             closedir(directory);
-            
 
-            MergeSort(&head->first, flag); //Sorting dei risultati trovati
-            List_print(head); //Stampa della lista ordinata
-            List_cleaner(head);//Deallocazione lista
+            MergeSort(&head->first, flag); // Sorting dei risultati trovati
+            List_print(head);              // Stampa della lista ordinata
+            List_cleaner(head);            // Deallocazione lista
 
+            // Controllo cicliclo della shared memory per terminare
             if (sem_wait(shm1_sem) < 0)
             {
                 handle_error("stat_manager.c: Errore nella post");
             }
             if (shm_ptr[0] == 9)
             {
-                printf("Entro in cs 9\n");
+                free(head);
                 shm_ptr[1] = gnome_pid;
                 if (sem_post(shm2_sem) < 0)
                 {
                     handle_error("stat_manager.c: Errore nella post");
                 }
 
-                free(head);
-
                 printf("Exiting...\n");
+
                 if (sem_post(shm1_sem) < 0)
                 {
                     handle_error("stat_manager.c: Errore nella post");
                 }
+                //Cleanup
                 if (sem_close(shm1_sem) < 0)
                 {
                     handle_error("process_list.c: Errore nella close di shm1_sem");
@@ -169,7 +157,7 @@ void process_list()
                 handle_error("stat_manager.c: Errore nella post");
             }
 
-            sleep(5);
+            sleep(5); //Un po' di leggibilità...
         }
     }
 }

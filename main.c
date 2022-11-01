@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     // Pulizia shared memory in caso di arresto imprevisto in esecuzioni precedenti
     shm_unlink(SHM_NAME);
 
-    // Apertura shared mamory
+    // Apertura shared mamory per la comunicazione inter-process
     int shm_fd = shm_open(SHM_NAME, O_RDWR | O_CREAT, 0660);
     if (shm_fd < 0)
     {
@@ -63,13 +63,13 @@ int main(int argc, char *argv[])
     if (pid == 0) //Nel figlio avvio il monitor dei processi
     {
 
-        system("gnome-terminal reset --tab -- /bin/bash -c './function/processLauncher; exec /bin/bash -i'");
+        system("gnome-terminal reset --tab -- /bin/bash -c './function/processLauncher; exec /bin/bash -i'"); //Stack overflow
         _exit(EXIT_SUCCESS);
     }
     else //Nel padre avvio la gestione dei segnali, poi, una volta terminato stat_manager(), procedo a chiudere simultaneamente il monitor
     {
         stat_manager();
-
+        printf("Exiting...  \n");
         //chiusura simultanea monitor
         if ((shm_ptr = (int *)mmap(0, SHM_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0)) == MAP_FAILED)
         {
@@ -80,11 +80,13 @@ int main(int argc, char *argv[])
         {
             handle_error("stat_manager.c: Errore nella wait");
         }
+        
+        kill(shm_ptr[1], SIGKILL); //invio SIGKILL al monitor
+
         if (sem_post(shm2_sem) < 0)
         {
             handle_error("stat_manager.c: Errore nella post");
         }
-        kill(shm_ptr[1], SIGKILL); //invio SIGKILL al monitor
 
         // Cleanup di shared memory e semafori
         if (shm_unlink(SHM_NAME) < 0)

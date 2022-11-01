@@ -3,7 +3,7 @@
 #include <dirent.h>
 #include "linked_list.h"
 
-
+//Define per nomi della shared memory e i semafori
 #define SHM_NAME  "SHM"
 #define SHM_SIZE  sizeof(int)
 #define SHM1_SEM "SEM1"

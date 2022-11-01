@@ -6,6 +6,7 @@
 
 // Il seguente file è stato costruito riadattando le funzioni delle linked list utilizzate nel corso
 
+//Simone Mariano
 void List_print(ListHead *head) // Funzione di stampa della linked list
 {
   struct_process *aux = head->first;
@@ -19,25 +20,27 @@ void List_print(ListHead *head) // Funzione di stampa della linked list
   printf("\n");
 }
 
+//Simone Mariano
 ListHead *List_init() // Funzione che inizializza la ListHead
 {
-  ListHead *head = (ListHead *)malloc(sizeof(ListHead)); // allocazione della ListHead
+  ListHead *head = (ListHead *)malloc(sizeof(ListHead)); 
 
   head->first = NULL;
   head->last = NULL;
   head->size = 0;
   return head;
 }
+//Iannone Bruno
 struct struct_process *struct_process_init(ListHead *head) // Funzione che inizializza la struct_process
 {
-  struct struct_process *new_node = (struct struct_process *)malloc(sizeof(struct_process)); // Allocazione del nodo
+  struct struct_process *new_node = (struct struct_process *)malloc(sizeof(struct_process)); 
   new_node->memory_usage = 0;
   new_node->cpu_usage = 0;
   new_node->pid = 0;
   new_node->next = NULL;
   return new_node;
 }
-
+//Simone Mariano
 void List_insert(struct struct_process *new_node, ListHead **head_ref) // Inserisce il nodo nella lista
 {
   new_node->next = (*head_ref)->first;
@@ -45,12 +48,12 @@ void List_insert(struct struct_process *new_node, ListHead **head_ref) // Inseri
   (*head_ref)->size++;
   return;
 }
-
+//Iannone Bruno
 void List_cleaner(ListHead *head) //Deallocazione lista
 {
 
-  if (head->first == NULL|| head->last == NULL)
-  {
+  if (head->first == NULL || head->last == NULL)
+  { 
     return;
   }
   struct_process *aux = head->first;

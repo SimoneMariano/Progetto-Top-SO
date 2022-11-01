@@ -11,9 +11,10 @@
 #include <signal.h>
 #include <semaphore.h>
 
-void stat_manager()
+void stat_manager() //SIMONE MARIANO
 {
 
+    //Apertura semafori e shared memory
     sem_t *shm1_sem = sem_open(SHM1_SEM, O_CREAT, 0600);
 
     if (shm1_sem == SEM_FAILED)
@@ -33,29 +34,30 @@ void stat_manager()
     }
     memset(shm_ptr, 0, SHM_SIZE);
 
-    while (1)
+    while (1) //Main Loop
     {
         
-        // variabile per gli scanf
-        char input[4];
-        memset(input,0,4);
+        
+        char input[10]; // variabile per gli scanf
+        memset(input,0,10);
 
         int pid;
 
-        printf("Inserire PID del processo da gestire o q per chiudere\n");
+        printf("Inserire PID del processo da gestire o q per chiudere\n"); //Scanf per la scelta del processo e relativo invio di segnale
         scanf("%s", input);
 
-        if (strcmp(input, "q") == 0)
+        if (strcmp(input, "q") == 0) //Comando di chiusura
         {
             if (sem_wait(shm1_sem) < 0)
             {
                 handle_error("stat_manager.c: Errore nella wait");
             }
-            shm_ptr[0] = 9;
+            shm_ptr[0] = 9; // inserimento nella shared memory del codice di chiusura
             if (sem_post(shm1_sem) < 0)
             {
                 handle_error("stat_manager.c: Errore nella post");
             }
+            //Cleanup
             if (munmap(shm_ptr, SHM_SIZE) == -1)
             {
                 handle_error("stat_manager.c: errore nella munmap");
@@ -69,7 +71,7 @@ void stat_manager()
         else
         {
             pid = atoi(input);
-            printf("k to kill, t to terminate, s to suspend, r to resume\n");
+            printf("k to kill, t to terminate, s to suspend, r to resume\n"); //Scelta del segnale e invio
             scanf("%s", input);
             if (strcmp(input, "k") == 0)
             {
