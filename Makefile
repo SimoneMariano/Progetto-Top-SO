@@ -27,5 +27,6 @@ subsystem:
 clean:
 	rm *.o
 
-cleanall: 
-	rm *.o MyTop
+cleanall:
+	rm *.o MyTop function/processLauncher
+
