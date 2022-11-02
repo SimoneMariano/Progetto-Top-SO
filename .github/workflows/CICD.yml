@@ -1,4 +1,4 @@
-name: C/C++ CI
+name: C CI
 
 on:
   push:
@@ -14,7 +14,5 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: compila
-      run: gcc -pthread -o myTop processHandler.h statHandler.h main.c
-    - name: start
-      run: ./myTop
+      run: make
 
