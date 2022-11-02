@@ -14,6 +14,7 @@
 #include "process_list.h"
 #include "mergesort.h"
 
+//Iannone Bruno
 void process_list()
 {
     // Apertura semafori e shared memory
@@ -45,7 +46,6 @@ void process_list()
         handle_error("process_list.c: errore nella mmap ");
     }
 
-    // IANNONE BRUNO
     // Scansione processi
     int flag;
     printf("0: ordinare per CpuUsage, 1: ordinare per MemUsage?\nRisposta: ");

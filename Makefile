@@ -1,4 +1,4 @@
-all: MyTop
+all: MyTop clean
 
 MyTop: main.o stat_manager.o process_list.o utils.o mergesort.o linked_list.o src/utils.h src/stat_manager.h src/mergesort.h src/process_list.h src/linked_list.h subsystem
 	gcc -g -o MyTop main.o stat_manager.o process_list.o utils.o linked_list.o mergesort.o

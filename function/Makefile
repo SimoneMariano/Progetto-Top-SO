@@ -1,4 +1,4 @@
-all: processLauncher
+all: processLauncher clean
 
 processLauncher: main_process.o process_list.o linked_list.o utils.o mergesort.o ../src/linked_list.h ../src/mergesort.h ../src/utils.h ../src/process_list.h
 	gcc -g -o processLauncher main_process.o process_list.o utils.o linked_list.o mergesort.o
