@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <dirent.h>
 
-//Simone Mariano
+// Simone Mariano
 int isNumber(char *str) // Funzione per verificare se una stringa è un numero
 {
 
@@ -20,7 +20,7 @@ int isNumber(char *str) // Funzione per verificare se una stringa è un numero
     }
 }
 
-//Iannone Bruno
+// Iannone Bruno
 int getTotalMemory(FILE *fileMemInfo) // funzione per recuperare la memoria totale del sistema da meminfo di proc
 
 {
@@ -34,19 +34,21 @@ int getTotalMemory(FILE *fileMemInfo) // funzione per recuperare la memoria tota
     }
     else
     {
-        char str[10]; //scarto stringa identificativa nel file
+        char str[10]; // scarto stringa identificativa nel file
         fscanf(fileMemInfo, "%s %d", str, &totalMemory);
-        //cleanup
-        if(fflush(fileMemInfo)!= 0){
+        // cleanup
+        if (fflush(fileMemInfo) != 0)
+        {
             handle_error("Utils.c: Errore nella fclose");
         }
-        if(fclose(fileMemInfo)!= 0){
+        if (fclose(fileMemInfo) != 0)
+        {
             handle_error("utils.c: Errore nella fclose");
         }
     }
     return totalMemory / 1.024;
 }
-//Simone Mariano
+// Simone Mariano
 void getUsedMemory(struct dirent *pDsCopy, int totMem, struct_process *s_process) // %memory usage di un processo
 {
 
@@ -59,7 +61,7 @@ void getUsedMemory(struct dirent *pDsCopy, int totMem, struct_process *s_process
     char path[256];
 
     strcpy(path, "");
-    strcat(strcat(strcat(path, "/proc/"), pDsCopy->d_name), "/smaps_rollup"); //Costruzione path
+    strcat(strcat(strcat(path, "/proc/"), pDsCopy->d_name), "/smaps_rollup"); // Costruzione path
 
     if ((statusPid = fopen(path, "r")) != NULL)
     {
@@ -70,7 +72,7 @@ void getUsedMemory(struct dirent *pDsCopy, int totMem, struct_process *s_process
 
         fscanf(statusPid, "%s %d", rss, &rss_value);
 
-        if ((strcmp(rss, "Rss:") == 0)) //Individuo il valore di memory usage
+        if ((strcmp(rss, "Rss:") == 0)) // Individuo il valore di memory usage
         {
 
             float ret = ((((float)rss_value / (float)totMem) / 1.024) * 100);
@@ -82,16 +84,18 @@ void getUsedMemory(struct dirent *pDsCopy, int totMem, struct_process *s_process
         }
 
         strcpy(path, "");
-        //cleanup
-        if(fflush(statusPid)!= 0){
+        // cleanup
+        if (fflush(statusPid) != 0)
+        {
             handle_error("Utils.c: Errore nella fclose");
         }
-        if(fclose(statusPid)!= 0){
+        if (fclose(statusPid) != 0)
+        {
             handle_error("utils.c: Errore nella fclose");
         }
     }
 }
-//Simone Mariano
+// Simone Mariano
 float getTotalCpu(FILE *fileCpuInfo) // Funzione per il calcolo della cpu totale utilizzata
 {
 
@@ -103,18 +107,21 @@ float getTotalCpu(FILE *fileCpuInfo) // Funzione per il calcolo della cpu totale
     }
     else
     {
-        //cleanup
         fscanf(fileCpuInfo, "%f", &uptime);
-        if(fflush(fileCpuInfo)!= 0){
+        // cleanup
+
+        if (fflush(fileCpuInfo) != 0)
+        {
             handle_error("utils.c: Errore nella fclose");
         }
-        if(fclose(fileCpuInfo)!= 0){
+        if (fclose(fileCpuInfo) != 0)
+        {
             handle_error("utils.c: Errore nella fclose");
         }
     }
     return uptime;
 }
-//Iannone Bruno
+// Iannone Bruno
 void getUsedCpu(struct dirent *pDsCopy, int cpuTot, struct struct_process *s_process) // % Cpu Utilizzata da un processo
 {
     FILE *statPid;
@@ -215,7 +222,7 @@ void getUsedCpu(struct dirent *pDsCopy, int cpuTot, struct struct_process *s_pro
         // aggiungiamo il tempo per i figli come user e kernel
         totalTime = totalTime + cutime + cstime;
 
-        seconds = cpuTot - (starttime / hz); //secondi di utilizzo
+        seconds = cpuTot - (starttime / hz); // secondi di utilizzo
 
         // printf("seconds: %f", seconds);
         // printf("\n");
@@ -224,26 +231,27 @@ void getUsedCpu(struct dirent *pDsCopy, int cpuTot, struct struct_process *s_pro
 
         s_process->cpu_usage = cpuUsage;
 
-        //cleanup
-        if(fflush(statPid)!= 0){
-            handle_error("utils.c: Errore nella fclose");
-        }
-        
-        if(fclose(statPid)!= 0){
+        // cleanup
+        if (fflush(statPid) != 0)
+        {
             handle_error("utils.c: Errore nella fclose");
         }
 
+        if (fclose(statPid) != 0)
+        {
+            handle_error("utils.c: Errore nella fclose");
+        }
     }
 }
 
-//SIMONE MARIANO
-int getPidandName(struct dirent *pDsCopy, struct_process *s_process) //Funzione per ottenere PID e NOME di un processo (simultaneamente per mantenere una consistenza)
+// SIMONE MARIANO
+int getPidandName(struct dirent *pDsCopy, struct_process *s_process) // Funzione per ottenere PID e NOME di un processo (simultaneamente per mantenere una consistenza)
 {
 
     FILE *statPid;
 
     char processName[128];
-    char processName2[128]; //array di appoggio per costruzione del nome
+    char processName2[128]; // array di appoggio per costruzione del nome
     char processState[2];
 
     int pid;
@@ -288,25 +296,26 @@ int getPidandName(struct dirent *pDsCopy, struct_process *s_process) //Funzione 
 
     strcat(s_process->name, processName);
     strcat(s_process->state, processState);
-    //cleanup
-    if(fflush(statPid)!= 0){
-            handle_error("utils.c: Errore nella fclose");
-        }
-    if(fclose(statPid)!= 0){
-            handle_error("utils.c: Errore nella fclose");
-        }
-    
+    // cleanup
+    if (fflush(statPid) != 0)
+    {
+        handle_error("utils.c: Errore nella fclose");
+    }
+    if (fclose(statPid) != 0)
+    {
+        handle_error("utils.c: Errore nella fclose");
+    }
 
     return 0;
 }
-//Fondamenti II
-void handle_error(char *msg) //Funzione per la gestione degli errori
+// Fondamenti II
+void handle_error(char *msg) // Funzione per la gestione degli errori
 {
     perror(msg);
     exit(EXIT_FAILURE);
 }
-//Iannone Bruno
-int string_to_int(char *dest, int src) //Funzione per la conversione da stringa a intero
+// Debug
+int string_to_int(char *dest, int src) // Funzione per la conversione da stringa a intero
 {
     int ret_value;
     ret_value = sprintf(dest, "%d", src);

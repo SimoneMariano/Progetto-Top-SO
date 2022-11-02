@@ -52,13 +52,13 @@ void process_list()
     scanf("%d", &flag);
 
     int gnome_pid = getppid();
-    char *cgnome_pid = malloc(sizeof(int));
+    /*char *cgnome_pid = malloc(sizeof(int));
     if (string_to_int(cgnome_pid, gnome_pid) < 0)
     {
         handle_error("process_list.c: Errore nella conversione del pid");
     }
     printf("%s %d\n", cgnome_pid, gnome_pid);
-    free(cgnome_pid);
+    free(cgnome_pid);*/
     ListHead *head = List_init();
 
     FILE *fileMemInfo; // file per recuperare la memoria totale
