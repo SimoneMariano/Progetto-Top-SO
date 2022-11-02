@@ -15,6 +15,6 @@
 
 # Configuration
 
-Execute the [gnome_terminal_installer.sh](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/SimoneMariano/Progetto-Top-SO/blob/2c62e27f51dfde153da3f1d81099cc14744ac42f/gnome_terminal_installer.sh) in your computer;
+Execute the [gnome_terminal_installer.sh](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/SimoneMariano/Progetto-Top-SO/blob/2c62e27f51dfde153da3f1d81099cc14744ac42f/gnome_terminal_installer.sh) in your computer.
 
 
