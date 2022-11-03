@@ -120,6 +120,7 @@ void process_list()
             MergeSort(&head->first, flag); // Sorting dei risultati trovati
             List_print(head);              // Stampa della lista ordinata
             List_cleaner(head);            // Deallocazione lista
+            free(head);
 
             // Controllo cicliclo della shared memory per terminare
             if (sem_wait(shm1_sem) < 0)
@@ -128,7 +129,6 @@ void process_list()
             }
             if (shm_ptr[0] == 9)
             {
-                free(head);
                 shm_ptr[1] = gnome_pid;
                 if (sem_post(shm2_sem) < 0)
                 {
